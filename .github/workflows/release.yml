@@ -133,3 +133,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # Emit a plain multi-arch manifest list (no provenance/SBOM attestation
+          # manifests). The `unknown/unknown` attestation entries confuse older
+          # Docker (Synology Container Manager) → it runs the wrong "image" and
+          # dies with "exec format error". Off = a clean amd64+arm64 index.
+          provenance: false
+          sbom: false
