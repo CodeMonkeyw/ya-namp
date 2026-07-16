@@ -65,8 +65,11 @@ body {
   display: none;
 }
 
-/* In picture-in-picture the native window has its own top-bar, so hide ours. */
-.main-win.in-pip .titlebar {
+/* Picture-in-picture is a compact, controls-only player: the native window
+   provides its own top-bar, and Моя волна + search don't belong in the mini view. */
+.main-win.in-pip .titlebar,
+.main-win.in-pip .wave-row,
+.main-win.in-pip .connect-row {
   display: none;
 }
 

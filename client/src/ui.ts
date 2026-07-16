@@ -713,15 +713,15 @@ export function initUI(player: Player): void {
       return;
     }
     if (!mainWin) return;
-    // Size the window to the player minus the titlebar we hide in PiP, so it
-    // sits edge-to-edge with no padding.
-    const rect = mainWin.getBoundingClientRect();
+    // Collapse to a controls-only player (hide titlebar, Моя волна, search).
+    mainWin.classList.add('in-pip');
+    const width = Math.ceil(mainWin.getBoundingClientRect().width) || 552;
     try {
-      pipWindow = await docPip.requestWindow({
-        width: Math.ceil(rect.width),
-        height: Math.max(140, Math.ceil(rect.height) - 27),
-      });
+      // Open generous, then shrink to the real content height once it lays out
+      // in the PiP window (its rendered height differs from the tab's).
+      pipWindow = await docPip.requestWindow({ width, height: 280 });
     } catch (err) {
+      mainWin.classList.remove('in-pip');
       setStatus(`picture-in-picture failed: ${errorMessage(err)}`, 'error');
       return;
     }
@@ -729,7 +729,6 @@ export function initUI(player: Player): void {
     pipWindow.document.title = pipTitle();
     // Edge-to-edge: no body padding/margin, no scrollbars.
     pipWindow.document.body.style.cssText = 'margin:0;padding:0;overflow:hidden;background:#0d0d13';
-    mainWin.classList.add('in-pip'); // hides the HTML titlebar (native chrome covers it)
     pipPlaceholder = document.createElement('div');
     pipPlaceholder.className = 'pip-placeholder';
     pipPlaceholder.textContent = '▸ player is in picture-in-picture — close that window to bring it back';
@@ -738,6 +737,19 @@ export function initUI(player: Player): void {
     pipBtn.classList.add('lit');
     shadeBtn.classList.add('active');
     pipWindow.addEventListener('pagehide', restoreFromPip);
+    // Fit the window to the player exactly, after layout settles.
+    const pw = pipWindow;
+    const fit = (): void => {
+      if (!mainWin || pipWindow !== pw) return;
+      const contentH = Math.ceil(mainWin.getBoundingClientRect().height);
+      const chromeH = pw.outerHeight - pw.innerHeight; // native top-bar
+      try {
+        pw.resizeTo(pw.outerWidth, contentH + chromeH);
+      } catch (err) {
+        console.warn('[ya-namp] pip resize unsupported:', errorMessage(err));
+      }
+    };
+    pw.requestAnimationFrame(() => pw.requestAnimationFrame(fit));
   }
   pipBtn.addEventListener('click', () => void togglePip());
   // The Winamp collapse (windowshade) titlebar button also toggles PiP.
