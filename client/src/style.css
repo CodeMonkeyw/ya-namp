@@ -1,0 +1,1145 @@
+/* ==========================================================================
+   ya-namp — classic Winamp 2.x skin, drawn entirely in CSS.
+   Beveled charcoal chrome, green-on-black LCD, chunky transport buttons.
+   ========================================================================== */
+
+:root {
+  --chrome: #26262f;
+  --chrome-light: #30303c;
+  --hi: #5f5f78;
+  --hi-bright: #8f8fa8;
+  --lo: #101016;
+  --lo-deep: #050508;
+  --gold: #d6c9a3;
+  --lcd-green: #00e800;
+  --lcd-dim: #007a00;
+  --ui-font: Tahoma, 'Segoe UI', Geneva, Verdana, sans-serif;
+  --lcd-font: 'Courier New', 'Lucida Console', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh;
+  padding: 36px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: radial-gradient(1200px 700px at 50% 18%, #1b1b26 0%, #0d0d13 60%, #08080c 100%);
+  font-family: var(--ui-font);
+  color: #c9c9dc;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------------------------------------------------------------- windows */
+
+.win {
+  width: 550px;
+  background: linear-gradient(180deg, var(--chrome-light), var(--chrome));
+  border: 2px solid;
+  border-color: var(--hi) var(--lo) var(--lo) var(--hi);
+  box-shadow:
+    0 0 0 1px #000,
+    0 14px 34px rgba(0, 0, 0, 0.55);
+}
+
+.playlist-win {
+  margin-top: 2px;
+}
+
+.playlist-win.hidden {
+  display: none;
+}
+
+/* --------------------------------------------------------------- titlebar */
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 26px;
+  padding: 0 8px;
+  background: linear-gradient(180deg, #3a3a4c 0%, #2c2c3a 45%, #232330 100%);
+  border-bottom: 1px solid var(--lo);
+  cursor: default;
+}
+
+.tb-lines {
+  flex: 1;
+  height: 8px;
+  background: repeating-linear-gradient(
+    180deg,
+    #71718c 0 1px,
+    #101018 1px 2px,
+    transparent 2px 4px
+  );
+}
+
+.tb-title {
+  font: bold 11px var(--ui-font);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: 1px 1px 0 #000;
+  white-space: nowrap;
+}
+
+.tb-buttons {
+  display: flex;
+  gap: 3px;
+}
+
+.tb-btn {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(180deg, #585870, #2e2e3e);
+  border: 1px solid;
+  border-color: var(--hi) var(--lo) var(--lo) var(--hi);
+}
+
+.tb-btn.min::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  height: 2px;
+  background: #14141e;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.tb-btn.shade::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 3px;
+  height: 2px;
+  background: #14141e;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.tb-btn.close::after {
+  content: '×';
+  position: absolute;
+  inset: 0;
+  font: bold 11px/12px var(--ui-font);
+  text-align: center;
+  color: #14141e;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* -------------------------------------------------------------- LCD panel */
+
+.display-row {
+  display: flex;
+  gap: 8px;
+  margin: 10px 10px 8px;
+}
+
+.clutter {
+  width: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: linear-gradient(90deg, #31313f, #22222c);
+  border: 1px solid;
+  border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+  font: bold 9px var(--ui-font);
+  color: #767690;
+  text-transform: uppercase;
+  cursor: default;
+}
+
+.lcd {
+  position: relative;
+  flex: 1;
+  display: flex;
+  gap: 14px;
+  padding: 8px 10px;
+  background: #000;
+  border: 2px solid;
+  border-color: var(--lo-deep) var(--hi) var(--hi) var(--lo-deep);
+  box-shadow: inset 0 0 14px rgba(0, 232, 0, 0.05);
+}
+
+/* faint CRT scanlines over the whole LCD */
+.lcd::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0 2px,
+    rgba(0, 0, 0, 0.16) 2px 3px
+  );
+}
+
+.lcd-left {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.time-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.state-icon {
+  width: 16px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--lcd-green);
+  text-shadow: 0 0 4px rgba(0, 232, 0, 0.4);
+}
+
+.time {
+  font: bold 30px/1 var(--lcd-font);
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+  color: var(--lcd-green);
+  text-shadow: 0 0 5px rgba(0, 232, 0, 0.45);
+}
+
+.time-wrap.paused .time {
+  animation: lcd-blink 1s steps(2, start) infinite;
+}
+
+@keyframes lcd-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+canvas#vis {
+  width: 152px;
+  height: 32px;
+  image-rendering: pixelated;
+  cursor: pointer;
+}
+
+.lcd-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3px 0;
+}
+
+.marquee {
+  overflow: hidden;
+}
+
+#marquee {
+  display: block;
+  white-space: pre;
+  font: bold 13px/1.5 var(--lcd-font);
+  letter-spacing: 1px;
+  color: var(--lcd-green);
+  text-shadow: 0 0 4px rgba(0, 232, 0, 0.35);
+}
+
+.info-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  font: bold 11px var(--lcd-font);
+  color: var(--lcd-dim);
+  text-transform: uppercase;
+}
+
+.lcd-num b {
+  display: inline-block;
+  min-width: 3ch;
+  text-align: right;
+  font: bold 15px var(--lcd-font);
+  color: var(--lcd-green);
+  text-shadow: 0 0 4px rgba(0, 232, 0, 0.35);
+}
+
+.lcd-num i {
+  font-style: normal;
+  margin-left: 4px;
+}
+
+.channels {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.lamp {
+  font: bold 11px var(--lcd-font);
+  text-transform: uppercase;
+  color: #0d4a0d;
+}
+
+.lamp.lit {
+  color: var(--lcd-green);
+  text-shadow: 0 0 5px rgba(0, 232, 0, 0.5);
+}
+
+/* ------------------------------------------------------- mixer / eq-pl row */
+
+.mixer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 10px 6px;
+}
+
+.knob-label {
+  font: bold 9px var(--ui-font);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #8f8fa8;
+}
+
+.eqpl {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+/* ----------------------------------------------------------------- sliders */
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 24px;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type='range']:focus {
+  outline: none;
+}
+
+#seek {
+  display: block;
+  width: 100%;
+}
+
+input[type='range'].small-range.vol {
+  width: 150px;
+}
+
+input[type='range'].small-range.bal {
+  width: 84px;
+}
+
+/* WebKit */
+input[type='range']::-webkit-slider-runnable-track {
+  height: 12px;
+  background: linear-gradient(180deg, #0c0c12, #1c1c26);
+  border: 2px solid;
+  border-color: var(--lo-deep) var(--hi) var(--hi) var(--lo-deep);
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 40px;
+  height: 20px;
+  margin-top: -6px;
+  background:
+    linear-gradient(90deg, transparent 0 16px, #cdb964 16px 24px, transparent 24px),
+    linear-gradient(180deg, #7a7a94, #3c3c50);
+  border: 1px solid;
+  border-color: var(--hi-bright) var(--lo-deep) var(--lo-deep) var(--hi-bright);
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+input[type='range'].small-range::-webkit-slider-thumb {
+  width: 26px;
+  background:
+    linear-gradient(90deg, transparent 0 10px, #cdb964 10px 16px, transparent 16px),
+    linear-gradient(180deg, #7a7a94, #3c3c50);
+}
+
+#volume::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, #0a3a0a, #3f3f08 60%, #4a1208);
+}
+
+/* Firefox */
+input[type='range']::-moz-range-track {
+  height: 12px;
+  background: linear-gradient(180deg, #0c0c12, #1c1c26);
+  border: 2px solid;
+  border-color: var(--lo-deep) var(--hi) var(--hi) var(--lo-deep);
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 40px;
+  height: 20px;
+  border-radius: 0;
+  background:
+    linear-gradient(90deg, transparent 0 16px, #cdb964 16px 24px, transparent 24px),
+    linear-gradient(180deg, #7a7a94, #3c3c50);
+  border: 1px solid;
+  border-color: var(--hi-bright) var(--lo-deep) var(--lo-deep) var(--hi-bright);
+}
+
+input[type='range'].small-range::-moz-range-thumb {
+  width: 26px;
+  background:
+    linear-gradient(90deg, transparent 0 10px, #cdb964 10px 16px, transparent 16px),
+    linear-gradient(180deg, #7a7a94, #3c3c50);
+}
+
+#volume::-moz-range-track {
+  background: linear-gradient(90deg, #0a3a0a, #3f3f08 60%, #4a1208);
+}
+
+.seek-row {
+  margin: 0 10px 8px;
+}
+
+/* --------------------------------------------------------------- transport */
+
+.transport-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin: 0 10px 10px;
+}
+
+.t-btn {
+  width: 47px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 12px var(--ui-font);
+  color: #16161e;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, #787890 0%, #4a4a5e 55%, #3a3a4c 100%);
+  border: 2px solid;
+  border-color: var(--hi-bright) var(--lo-deep) var(--lo-deep) var(--hi-bright);
+  cursor: pointer;
+}
+
+.t-btn svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  filter: drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.25));
+}
+
+.t-btn:hover {
+  filter: brightness(1.08);
+}
+
+.t-btn:active {
+  padding-top: 2px;
+  background: linear-gradient(180deg, #40404f, #5a5a6c);
+  border-color: var(--lo-deep) var(--hi-bright) var(--hi-bright) var(--lo-deep);
+}
+
+.t-btn.eject {
+  width: 40px;
+  margin-left: 12px;
+}
+
+/* ------------------------------------------------------------ mini buttons */
+
+.mini-btn {
+  height: 24px;
+  padding: 0 12px;
+  font: bold 10px var(--ui-font);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #d6d6e6;
+  background: linear-gradient(180deg, #62627a, #3a3a4c);
+  border: 2px solid;
+  border-color: var(--hi-bright) var(--lo-deep) var(--lo-deep) var(--hi-bright);
+  cursor: pointer;
+}
+
+.mini-btn:hover {
+  filter: brightness(1.08);
+}
+
+.mini-btn:active {
+  background: linear-gradient(180deg, #3a3a4c, #52526a);
+  border-color: var(--lo-deep) var(--hi-bright) var(--hi-bright) var(--lo-deep);
+}
+
+.mini-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.mini-btn.lit {
+  color: var(--lcd-green);
+  text-shadow: 0 0 4px rgba(0, 232, 0, 0.6);
+}
+
+/* Consistency: the two action buttons share a width so the connect row keeps
+   the same footprint whether it shows Connect or Search. */
+#btn-connect,
+#btn-search {
+  min-width: 84px;
+  flex: none;
+}
+
+/* Uniform, subtle feedback on every interactive control. */
+.mini-btn,
+.m-btn,
+.t-btn,
+.wave-btn,
+.lcd-input {
+  transition: filter 0.1s ease, box-shadow 0.12s ease;
+}
+
+/* One focus treatment for every input and button (keyboard users). */
+.lcd-input:focus-visible,
+button:focus-visible {
+  outline: 1px solid rgba(0, 232, 0, 0.55);
+  outline-offset: 1px;
+}
+
+/* ------------------------------------------------------------- connect row */
+
+.connect-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--lo);
+  background: linear-gradient(180deg, #20202a, #191922);
+}
+
+.led {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #4a4a58;
+  box-shadow: inset 0 0 2px #000;
+}
+
+.led.demo {
+  background: #e0a800;
+  box-shadow: 0 0 6px rgba(224, 168, 0, 0.8);
+}
+
+.led.yandex {
+  background: #00d000;
+  box-shadow: 0 0 6px rgba(0, 208, 0, 0.8);
+}
+
+.led.offline {
+  background: #d02020;
+  box-shadow: 0 0 6px rgba(208, 32, 32, 0.8);
+}
+
+.mode-label {
+  min-width: 92px;
+  font: bold 10px var(--ui-font);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #c9c9dc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Static (GitHub Pages) demo build: replaces the token field in the connect row. */
+.demo-note {
+  flex: 1;
+  min-width: 0;
+  font: bold 10px var(--ui-font);
+  letter-spacing: 0.5px;
+  color: #9aa0b6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.demo-note a {
+  color: var(--lcd-green, #00e800);
+  text-decoration: none;
+}
+
+.demo-note a:hover {
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------------- LCD-styled inputs */
+
+.lcd-input {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  padding: 0 7px;
+  background: #000;
+  color: var(--lcd-green);
+  caret-color: var(--lcd-green);
+  border: 2px solid;
+  border-color: var(--lo-deep) var(--hi) var(--hi) var(--lo-deep);
+  font: 12px var(--lcd-font);
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.lcd-input::placeholder {
+  color: #006a00;
+}
+
+.lcd-input:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 232, 0, 0.35);
+}
+
+/* ---------------------------------------------------------------- playlist */
+
+.pl-body {
+  position: relative; /* offsetParent for row auto-scroll */
+  height: 340px;
+  margin: 8px 10px 6px;
+  overflow-y: auto;
+  background: #000;
+  border: 2px solid;
+  border-color: var(--lo-deep) var(--hi) var(--hi) var(--lo-deep);
+  scrollbar-color: #52526a #14141c;
+  scrollbar-width: thin;
+}
+
+.pl-body::-webkit-scrollbar {
+  width: 14px;
+}
+
+.pl-body::-webkit-scrollbar-track {
+  background: #14141c;
+  border-left: 1px solid #000;
+}
+
+.pl-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #6a6a82, #3c3c4e);
+  border: 1px solid #000;
+}
+
+#playlist {
+  list-style: none;
+  font: 13px/1.55 var(--lcd-font);
+}
+
+#playlist li {
+  display: flex;
+  align-items: center;
+  padding: 1px 8px;
+  color: #00c800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+#playlist li:hover {
+  background: #101060;
+}
+
+#playlist li.current {
+  color: #fff;
+  background: #26268c;
+}
+
+.pl-idx {
+  min-width: 4ch;
+}
+
+.pl-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pl-time {
+  margin-left: 12px;
+}
+
+/* ---------------------------------------------------- play-mode + wave rows */
+
+.mode-toggles {
+  display: flex;
+  gap: 3px;
+  margin-left: auto;
+}
+
+.m-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-width: 46px;
+  height: 30px;
+  padding: 0 6px;
+  font: 12px var(--ui-font);
+  color: #d6d6e6;
+  background: linear-gradient(180deg, #62627a, #3a3a4c);
+  border: 2px solid;
+  border-color: var(--hi-bright) var(--lo-deep) var(--lo-deep) var(--hi-bright);
+  cursor: pointer;
+}
+
+.m-btn svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+
+.m-btn i {
+  font: 7px var(--ui-font);
+  font-style: normal;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.m-btn:hover {
+  filter: brightness(1.08);
+}
+
+.m-btn:active {
+  background: linear-gradient(180deg, #3a3a4c, #52526a);
+  border-color: var(--lo-deep) var(--hi-bright) var(--hi-bright) var(--lo-deep);
+}
+
+.m-btn.lit {
+  color: var(--lcd-green);
+  text-shadow: 0 0 5px rgba(0, 232, 0, 0.65);
+}
+
+.m-btn.lit i {
+  opacity: 1;
+  color: var(--lcd-green);
+}
+
+.wave-row {
+  margin: 0 10px 10px;
+}
+
+.wave-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 40px;
+  padding: 0 14px;
+  color: #f4efe0;
+  text-align: left;
+  background: linear-gradient(180deg, #4a3d7a 0%, #3a2f63 55%, #2a2350 100%);
+  border: 2px solid;
+  border-color: #8f7fd0 #1a1533 #1a1533 #8f7fd0;
+  cursor: pointer;
+}
+
+.wave-btn:hover {
+  filter: brightness(1.12);
+}
+
+.wave-btn:active {
+  border-color: #1a1533 #8f7fd0 #8f7fd0 #1a1533;
+}
+
+.wave-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.wave-btn.lit {
+  background: linear-gradient(180deg, #6a58b0 0%, #4a3d7a 55%, #38306a 100%);
+  box-shadow: inset 0 0 10px rgba(180, 150, 255, 0.4), 0 0 8px rgba(120, 90, 220, 0.5);
+}
+
+.wave-ico {
+  display: inline-flex;
+  color: #c9b8ff;
+  filter: drop-shadow(0 0 5px rgba(150, 110, 255, 0.9));
+}
+
+.wave-ico svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.wave-text {
+  font: bold 15px var(--ui-font);
+  letter-spacing: 0.5px;
+}
+
+.wave-sub {
+  margin-left: auto;
+  font: 9px var(--ui-font);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #b0a6d8;
+}
+
+.pl-badge.hidden {
+  display: none;
+}
+
+.pl-badge {
+  margin-left: 8px;
+  padding: 1px 6px;
+  font: bold 9px var(--ui-font);
+  letter-spacing: 0.5px;
+  color: #e8dfff;
+  background: linear-gradient(180deg, #5a48a0, #3a2f63);
+  border: 1px solid #1a1533;
+  border-radius: 2px;
+  vertical-align: 1px;
+}
+
+/* -------------------------------------------------------- playlist picker */
+
+.pl-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 0;
+}
+
+.pl-controls-label {
+  font: bold 9px var(--ui-font);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #8f8fa8;
+  white-space: nowrap;
+}
+
+.pl-picker {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  padding: 0 24px 0 7px;
+  appearance: none;
+  -webkit-appearance: none;
+  color: var(--lcd-green);
+  background-color: #000;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0h10L5 6z' fill='%2300e800'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 9px 6px;
+  border: 2px solid;
+  border-color: var(--lo-deep) var(--hi) var(--hi) var(--lo-deep);
+  font: 12px var(--lcd-font);
+  cursor: pointer;
+}
+
+.pl-picker:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 232, 0, 0.35);
+}
+
+.pl-picker option {
+  color: var(--lcd-green);
+  background: #14141c;
+}
+
+/* new-playlist control */
+#btn-newpl {
+  flex: none;
+}
+
+#btn-newpl.hidden,
+#pl-new.hidden {
+  display: none;
+}
+
+.pl-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pl-new #pl-new-name {
+  flex: 1;
+  min-width: 0;
+}
+
+#btn-newpl-cancel {
+  min-width: 0;
+  padding: 0 9px;
+}
+
+/* like heart — outline by default, filled warm-red when the track is liked */
+#btn-like.liked {
+  color: #ff5a7a;
+}
+
+#btn-like.liked svg {
+  fill: #ff5a7a;
+}
+
+#btn-like.liked i {
+  opacity: 1;
+  color: #ff5a7a;
+}
+
+/* per-row "add to playlist" button */
+.pl-add-btn {
+  flex: none;
+  width: 18px;
+  height: 16px;
+  margin-left: 10px;
+  padding: 0;
+  font: bold 14px/1 var(--ui-font);
+  color: #6a6a82;
+  background: linear-gradient(180deg, #3a3a4c, #2a2a36);
+  border: 1px solid;
+  border-color: var(--hi) var(--lo-deep) var(--lo-deep) var(--hi);
+  cursor: pointer;
+}
+
+.pl-add-btn:hover {
+  color: var(--lcd-green);
+  filter: brightness(1.1);
+}
+
+.pl-add-btn:active {
+  border-color: var(--lo-deep) var(--hi) var(--hi) var(--lo-deep);
+}
+
+/* compact "Add to" target selector, wraps under the load picker if needed */
+.pl-controls {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.pl-picker-sm {
+  flex: 0 1 150px;
+}
+
+.add-to-label {
+  margin-left: 4px;
+}
+
+/* editing controls (the row + buttons, "Add to", + New) show ONLY in edit mode
+   so the default browse/listen view stays uncluttered. */
+.pl-edit-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.playlist-win:not(.editing) .pl-edit-tools,
+.playlist-win:not(.editing) .pl-add-btn {
+  display: none;
+}
+
+#btn-edit {
+  margin-left: auto; /* push Edit to the right in browse mode */
+}
+
+.playlist-win.editing #btn-edit {
+  margin-left: 0;
+}
+
+/* ------------------------------------------------------------ equalizer */
+.eq-win.hidden {
+  display: none;
+}
+
+.eq-body {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px;
+}
+
+.eq-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 70px;
+  flex: none;
+}
+
+#eq-on {
+  width: 100%;
+}
+
+#eq-preset {
+  width: 100%;
+  flex: none;
+  height: 22px;
+}
+
+.eq-sliders {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 10px;
+  background: #000;
+  border: 2px solid;
+  border-color: var(--lo-deep) var(--hi) var(--hi) var(--lo-deep);
+}
+
+.eq-sliders.eq-off {
+  opacity: 0.4;
+}
+
+.eq-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.eq-preamp {
+  margin-right: 8px;
+  padding-right: 8px;
+  border-right: 1px solid #1c1c26;
+}
+
+.eq-label {
+  font: bold 8px var(--lcd-font);
+  letter-spacing: 0.5px;
+  color: var(--lcd-dim);
+  text-transform: uppercase;
+}
+
+/* Higher specificity than the base `input[type='range']` rules, which would
+   otherwise force height:24px and break the vertical faders. */
+input[type='range'].eq-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 24px;
+  height: 104px;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type='range'].eq-slider::-webkit-slider-runnable-track {
+  width: 6px;
+  height: 104px;
+  background: linear-gradient(90deg, #0a0a10, #20202c);
+  border: 1px solid var(--lo-deep);
+  box-shadow: inset 0 0 4px rgba(0, 232, 0, 0.18);
+}
+
+input[type='range'].eq-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 9px;
+  margin: 0;
+  background: linear-gradient(180deg, #b6b6ce 0%, #6a6a82 55%, #46465a 100%);
+  border: 1px solid;
+  border-color: var(--hi-bright) var(--lo-deep) var(--lo-deep) var(--hi-bright);
+}
+
+input[type='range'].eq-slider::-moz-range-track {
+  width: 6px;
+  height: 104px;
+  background: linear-gradient(90deg, #0a0a10, #20202c);
+  border: 1px solid var(--lo-deep);
+}
+
+input[type='range'].eq-slider::-moz-range-thumb {
+  width: 22px;
+  height: 9px;
+  border-radius: 0;
+  background: linear-gradient(180deg, #b6b6ce, #46465a);
+  border: 1px solid var(--lo-deep);
+}
+
+/* --------------------------------------------------------- playlist search */
+
+.pl-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 2px;
+}
+
+/* Once connected, the token field hides and the search lifts into its row. */
+#token-input.hidden,
+#btn-connect.hidden {
+  display: none;
+}
+
+.pl-search.in-connect {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+}
+
+.search-ico {
+  display: inline-flex;
+  align-items: center;
+  color: #7a7a92;
+}
+
+.search-ico svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+
+.pl-search #search {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --------------------------------------------------------- playlist footer */
+
+.pl-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px 8px;
+}
+
+.status {
+  flex: 1;
+  min-width: 0;
+  font: 10px var(--ui-font);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #9a9ab2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status.error {
+  color: #ff6058;
+}
+
+.pl-total {
+  font: bold 12px var(--lcd-font);
+  color: var(--lcd-green);
+}

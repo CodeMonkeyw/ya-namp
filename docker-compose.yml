@@ -1,0 +1,30 @@
+# ya-namp — Docker / Podman Compose (also usable as a Synology DSM
+# Container Manager "Project"). Works with `docker compose` and
+# `podman-compose` / `podman kube play`-style tooling.
+#
+#   docker compose up -d        # build + run, http://<host>:8058
+#   podman-compose up -d
+#
+# Demo mode needs nothing. To connect a real Yandex account, either:
+#   * uncomment `env_file: .env` below and create a .env with YANDEX_TOKEN=...
+#     (run `npm run set-token` to produce one — see docs/deploy.md), or
+#   * uncomment the `environment:` YANDEX_TOKEN line and pass it at deploy time.
+services:
+  ya-namp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ya-namp:latest
+    container_name: ya-namp
+    # Synology DSM runs containers as root.
+    user: "0:0"
+    ports:
+      - "8058:8058"
+    environment:
+      NODE_ENV: production
+      PORT: "8058"
+      # YANDEX_TOKEN: "paste-your-token-here"   # optional real-account mode
+    # Optional: mount a .env file with YANDEX_TOKEN=... (read at /app/.env).
+    # env_file:
+    #   - .env
+    restart: unless-stopped

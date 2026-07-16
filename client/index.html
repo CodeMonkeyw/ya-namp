@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#0d0d13" />
+    <title>ya-namp</title>
+  </head>
+  <body>
+    <div id="app" class="shell">
+      <!-- ============ MAIN PLAYER WINDOW ============ -->
+      <div class="win main-win">
+        <div class="titlebar">
+          <div class="tb-lines"></div>
+          <div class="tb-title">ya-namp</div>
+          <div class="tb-lines"></div>
+          <div class="tb-buttons">
+            <span class="tb-btn min" title="Minimize (decorative)"></span>
+            <span class="tb-btn shade" title="Windowshade (decorative)"></span>
+            <span class="tb-btn close" title="Close (decorative)"></span>
+          </div>
+        </div>
+
+        <div class="display-row">
+          <div class="clutter">
+            <span title="Options">O</span>
+            <span title="About">A</span>
+            <span title="File info">I</span>
+            <span title="Double size">D</span>
+            <span title="Visualizer">V</span>
+          </div>
+          <div class="lcd">
+            <div class="lcd-left">
+              <div class="time-wrap" id="time-toggle" title="Click to toggle elapsed / remaining">
+                <span id="state-icon" class="state-icon">&#x25A0;</span>
+                <span id="time" class="time">00:00</span>
+              </div>
+              <canvas id="vis" width="76" height="16" title="Click to change visualization"></canvas>
+            </div>
+            <div class="lcd-right">
+              <div class="marquee"><span id="marquee">WELCOME TO YA-NAMP</span></div>
+              <div class="info-row">
+                <span class="lcd-num"><b id="kbps">--</b><i>kbps</i></span>
+                <span class="lcd-num"><b id="khz">--</b><i>khz</i></span>
+                <span class="channels">
+                  <span class="lamp">mono</span>
+                  <span id="lamp-stereo" class="lamp">stereo</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mixer-row">
+          <span class="knob-label">vol</span>
+          <input type="range" id="volume" class="small-range vol" min="0" max="100" value="80" title="Volume" />
+          <span class="knob-label">bal</span>
+          <input type="range" id="balance" class="small-range bal" min="-100" max="100" value="0"
+                 title="Balance (double-click to center)" />
+          <div class="eqpl">
+            <button class="mini-btn" id="btn-eq" title="Equalizer">EQ</button>
+            <button class="mini-btn lit" id="btn-pl" title="Toggle playlist window">PL</button>
+          </div>
+        </div>
+
+        <div class="seek-row">
+          <input type="range" id="seek" min="0" max="1000" value="0" title="Seek" />
+        </div>
+
+        <div class="transport-row">
+          <button class="t-btn" id="btn-prev" title="Previous (Z)" aria-label="Previous">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 6h2.2v12H4z"/><path d="M15 6v12l-6.5-6z"/><path d="M22 6v12l-6.5-6z"/></svg>
+          </button>
+          <button class="t-btn" id="btn-play" title="Play (X)" aria-label="Play">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5v14l12-7z"/></svg>
+          </button>
+          <button class="t-btn" id="btn-pause" title="Pause (C)" aria-label="Pause">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4.2v14H6z"/><path d="M13.8 5h4.2v14h-4.2z"/></svg>
+          </button>
+          <button class="t-btn" id="btn-stop" title="Stop (V)" aria-label="Stop">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6h12v12H6z"/></svg>
+          </button>
+          <button class="t-btn" id="btn-next" title="Next (B)" aria-label="Next">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 6H20v12h-2.2z"/><path d="M2 6v12l6.5-6z"/><path d="M9 6v12l6.5-6z"/></svg>
+          </button>
+          <button class="t-btn eject" id="btn-eject" title="Open (focus search)" aria-label="Open">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 14.5h14L12 6.5z"/><path d="M5 16.8h14V19H5z"/></svg>
+          </button>
+          <div class="mode-toggles">
+            <button class="m-btn" id="btn-like" title="Like / unlike current track (L)" aria-label="Like">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 6.6a5 5 0 0 0-7.1 0L12 8.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.3l8.8-8.8a5 5 0 0 0 0-7.1z"/></svg>
+              <i>like</i>
+            </button>
+            <button class="m-btn" id="btn-shuffle" title="Shuffle (S)" aria-label="Shuffle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+              <i>shuffle</i>
+            </button>
+            <button class="m-btn" id="btn-repeat" title="Repeat: off / all / one (R)" aria-label="Repeat">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+              <i>repeat</i>
+            </button>
+          </div>
+        </div>
+
+        <div class="wave-row">
+          <button class="wave-btn" id="btn-wave" title="Start Моя волна — Yandex AI radio (W)">
+            <span class="wave-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M2 12q2.75-7 5.5 0t5.5 0 5.5 0 3.5-3.5"/></svg>
+            </span>
+            <span class="wave-text">Моя волна</span>
+            <span class="wave-sub">my wave · ai radio</span>
+          </button>
+        </div>
+
+        <div class="connect-row" id="connect-row">
+          <span id="mode-led" class="led"></span>
+          <span id="mode-label" class="mode-label">connecting</span>
+          <input type="password" id="token-input" class="lcd-input" placeholder="paste yandex oauth token"
+                 autocomplete="off" spellcheck="false" />
+          <button class="mini-btn" id="btn-connect">Connect</button>
+        </div>
+      </div>
+
+      <!-- ============ EQUALIZER WINDOW ============ -->
+      <div class="win eq-win hidden" id="eq-win">
+        <div class="titlebar">
+          <div class="tb-lines"></div>
+          <div class="tb-title">equalizer</div>
+          <div class="tb-lines"></div>
+        </div>
+        <div class="eq-body">
+          <div class="eq-head">
+            <button class="mini-btn lit" id="eq-on" title="Toggle equalizer">On</button>
+            <select id="eq-preset" class="pl-picker pl-picker-sm" title="EQ preset"></select>
+          </div>
+          <div class="eq-sliders" id="eq-sliders"></div>
+        </div>
+      </div>
+
+      <!-- ============ PLAYLIST WINDOW ============ -->
+      <div class="win playlist-win" id="playlist-win">
+        <div class="titlebar">
+          <div class="tb-lines"></div>
+          <div class="tb-title">playlist editor <span id="pl-badge" class="pl-badge hidden">&#x223F; МОЯ ВОЛНА</span></div>
+          <div class="tb-lines"></div>
+        </div>
+        <div class="pl-controls">
+          <span class="pl-controls-label">Playlist &#x25BE;</span>
+          <select id="playlist-picker" class="pl-picker" title="Load one of your playlists">
+            <option value="">&mdash; playlists &mdash;</option>
+          </select>
+          <button class="mini-btn" id="btn-edit" title="Edit playlists — create and add tracks">Edit</button>
+          <span class="pl-edit-tools" id="pl-edit-tools">
+            <button class="mini-btn" id="btn-newpl" title="Save the current tracks as a new playlist">+ New</button>
+            <span class="pl-new hidden" id="pl-new">
+              <input type="text" id="pl-new-name" class="lcd-input" placeholder="new playlist name"
+                     autocomplete="off" spellcheck="false" maxlength="80" />
+              <button class="mini-btn" id="btn-newpl-save">Create</button>
+              <button class="mini-btn" id="btn-newpl-cancel" title="Cancel">&times;</button>
+            </span>
+            <span class="pl-controls-label add-to-label">Add&nbsp;to</span>
+            <select id="add-target" class="pl-picker pl-picker-sm" title="The + on each row adds that track here">
+              <option value="">&mdash; choose &mdash;</option>
+            </select>
+          </span>
+        </div>
+        <div class="pl-body">
+          <ol id="playlist"></ol>
+        </div>
+        <div class="pl-search" id="pl-search">
+          <span class="search-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </span>
+          <input type="text" id="search" class="lcd-input" placeholder="search any track — artist or title"
+                 autocomplete="off" spellcheck="false" />
+          <button class="mini-btn" id="btn-search">Search</button>
+        </div>
+        <div class="pl-footer">
+          <span id="status" class="status"></span>
+          <span id="pl-total" class="pl-total">0:00</span>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

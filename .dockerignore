@@ -1,0 +1,27 @@
+# Build context hygiene — keep the image small and never leak secrets.
+# node_modules is reinstalled fresh in the build stage via `npm ci`.
+**/node_modules
+**/dist
+
+# Secrets / local env — the runtime reads /app/.env only if you mount one.
+.env
+.env.*
+!.env.example
+
+# VCS / editor / OS cruft
+.git
+.gitignore
+.DS_Store
+**/*.log
+
+# Docs & container artifacts (not needed inside the build)
+docs
+*.md
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Local single-binary / scratch outputs
+build
+sea
+scratchpad
