@@ -72,18 +72,22 @@ if (!fs.existsSync(path.join(clientDist, 'index.html'))) {
 //    SEA sets to the executable path) via a banner.
 step('Bundling server → build/sea/server.cjs (CJS)');
 fs.mkdirSync(BUILD, { recursive: true });
-const esbuild = path.join(ROOT, 'node_modules', '.bin', isWin ? 'esbuild.cmd' : 'esbuild');
-run(esbuild, [
-  'server/src/index.ts',
-  '--bundle',
-  '--platform=node',
-  '--format=cjs',
-  '--target=node22',
-  '--packages=bundle',
-  '--define:import.meta.url=__IM_URL__',
-  '--banner:js=const __IM_URL__=require("url").pathToFileURL(__filename).href;',
-  `--outfile=${path.join(BUILD, 'server.cjs')}`,
-]);
+// Use esbuild's JS API rather than the CLI shim: cross-platform (no .cmd), and
+// it avoids the Windows shell mangling the banner/define args' quotes/spaces.
+const esbuild = require('esbuild');
+await esbuild.build({
+  entryPoints: [path.join('server', 'src', 'index.ts')],
+  bundle: true,
+  platform: 'node',
+  format: 'cjs',
+  target: 'node22',
+  packages: 'bundle',
+  define: { 'import.meta.url': '__IM_URL__' },
+  banner: { js: 'const __IM_URL__=require("url").pathToFileURL(__filename).href;' },
+  outfile: path.join(BUILD, 'server.cjs'),
+  absWorkingDir: ROOT,
+  logLevel: 'info',
+});
 
 // 3. Generate the SEA preparation blob.
 step('Generating SEA blob');
