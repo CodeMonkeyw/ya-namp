@@ -139,3 +139,23 @@ jobs:
           # dies with "exec format error". Off = a clean amd64+arm64 index.
           provenance: false
           sbom: false
+
+      # Synology DSM is x86_64 — ship a directly-importable single-arch amd64
+      # docker-archive (Container Manager > Image > Add from file). No registry,
+      # no manifest-list ambiguity. Reuses the buildx amd64 layer cache.
+      - name: Build Synology (amd64) image tar
+        run: |
+          set -euo pipefail
+          asset="ya-namp-${GITHUB_REF_NAME}-synology-amd64.tar"
+          docker buildx build --platform linux/amd64 --provenance=false \
+            --tag ya-namp:latest \
+            --output "type=docker,dest=${asset}" .
+          gzip -f "${asset}"
+          ls -lh "${asset}.gz"
+
+      - name: Attach Synology tar to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: ya-namp-*-synology-amd64.tar.gz
+          fail_on_unmatched_files: true

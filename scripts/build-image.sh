@@ -6,13 +6,16 @@
 # `docker` is aliased to `podman` in this environment, so we default to podman.
 #
 # Env overrides:
-#   ENGINE   container engine            (default: podman)
-#   IMAGE    image ref to build/tag      (default: ya-namp:latest)
-#   OUTPUT   tar path for `podman save`  (default: dist/ya-namp.tar)
-#   SAVE     1 = also write the tar, 0 = build only   (default: 1)
+#   ENGINE    container engine           (default: podman)
+#   IMAGE     image ref to build/tag     (default: ya-namp:latest)
+#   OUTPUT    tar path for `save`        (default: dist/ya-namp.tar)
+#   SAVE      1 = also write the tar, 0 = build only   (default: 1)
+#   PLATFORM  target arch                (default: linux/amd64 — Synology DSM is
+#             x86_64; set linux/arm64 for ARM NAS, or empty for the host arch)
 #
 # Examples:
-#   ./scripts/build-image.sh                       # build + dist/ya-namp.tar
+#   ./scripts/build-image.sh                       # amd64 build + dist/ya-namp.tar
+#   PLATFORM=linux/arm64 ./scripts/build-image.sh  # for an ARM NAS
 #   SAVE=0 ./scripts/build-image.sh                # build only
 #   IMAGE=ya-namp:1.0 OUTPUT=dist/ya-namp-1.0.tar ./scripts/build-image.sh
 # ---------------------------------------------------------------------------
@@ -22,6 +25,9 @@ ENGINE="${ENGINE:-podman}"
 IMAGE="${IMAGE:-ya-namp:latest}"
 OUTPUT="${OUTPUT:-dist/ya-namp.tar}"
 SAVE="${SAVE:-1}"
+# Synology DSM runs on x86_64, so default the archive to amd64 even when built
+# on an arm64 host (cross-built via emulation). Set PLATFORM= (empty) for host arch.
+PLATFORM="${PLATFORM-linux/amd64}"
 
 # Resolve repo root from this script's location so it runs from anywhere.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -32,8 +38,13 @@ if ! command -v "$ENGINE" >/dev/null 2>&1; then
   exit 1
 fi
 
+PLATFORM_ARGS=()
+if [ -n "$PLATFORM" ]; then
+  PLATFORM_ARGS=(--platform "$PLATFORM")
+  echo "==> Target platform: $PLATFORM (cross-built via emulation if host differs)"
+fi
 echo "==> Building image '$IMAGE' with $ENGINE"
-"$ENGINE" build -t "$IMAGE" -f Dockerfile "$ROOT"
+"$ENGINE" build "${PLATFORM_ARGS[@]}" -t "$IMAGE" -f Dockerfile "$ROOT"
 
 if [ "$SAVE" != "1" ]; then
   echo "==> Build complete (SAVE=0, skipping tar)."

@@ -76,6 +76,14 @@ docker run -d -p 8058:8058 ghcr.io/lifeart/ya-namp:latest
 once (repo → **Packages** → *ya-namp* → *Package settings* → change visibility)
 before anonymous `docker pull` works.
 
+**Synology DSM (x86_64):** the simplest path avoids the registry — download
+`ya-namp-<version>-synology-amd64.tar.gz` from
+[Releases](https://github.com/lifeart/ya-namp/releases), then **Container Manager
+→ Image → Add → Add From File**, and run it mapping host `8058` → container
+`8058`. It's a clean single-arch amd64 archive, so no manifest-list confusion.
+(Locally, `npm run image:build` also builds an amd64 tar by default — set
+`PLATFORM=linux/arm64` for an ARM NAS.)
+
 ## Run it
 
 ```bash
