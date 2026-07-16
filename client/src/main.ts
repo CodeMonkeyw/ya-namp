@@ -4,3 +4,16 @@ import { Player } from './player';
 import { initUI } from './ui';
 
 initUI(new Player());
+
+// Register the PWA service worker. Base-aware (import.meta.env.BASE_URL is "/"
+// on the normal build and "/ya-namp/" on the GitHub Pages build), so both the
+// SW URL and its scope resolve correctly wherever the app is hosted.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register(`${import.meta.env.BASE_URL}sw.js`, {
+        scope: import.meta.env.BASE_URL,
+      })
+      .catch((e) => console.warn('[ya-namp] SW registration failed:', e));
+  });
+}

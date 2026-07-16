@@ -10,6 +10,7 @@ import {
   addToPlaylist,
   createPlaylist,
   errorMessage,
+  getBitrate,
   getLikedIds,
   getPlaylists,
   getPlaylistTracks,
@@ -743,13 +744,24 @@ export function initUI(player: Player): void {
       if (!mainWin || pipWindow !== pw) return;
       const contentH = Math.ceil(mainWin.getBoundingClientRect().height);
       const chromeH = pw.outerHeight - pw.innerHeight; // native top-bar
+      const target = contentH + chromeH;
+      // Only resize when meaningfully off — avoids a resize→event→resize loop as
+      // the user drags the window (the media-query degradation reflows content).
+      if (Math.abs(pw.outerHeight - target) <= 6) return;
       try {
-        pw.resizeTo(pw.outerWidth, contentH + chromeH);
+        pw.resizeTo(pw.outerWidth, target);
       } catch (err) {
         console.warn('[ya-namp] pip resize unsupported:', errorMessage(err));
       }
     };
     pw.requestAnimationFrame(() => pw.requestAnimationFrame(fit));
+    // Stay adaptive: re-fit the height after the user resizes (width change →
+    // priority degradation reflows → height changes → snap the window to it).
+    let fitRaf = 0;
+    pw.addEventListener('resize', () => {
+      pw.cancelAnimationFrame(fitRaf);
+      fitRaf = pw.requestAnimationFrame(fit);
+    });
   }
   pipBtn.addEventListener('click', () => void togglePip());
   // The Winamp collapse (windowshade) titlebar button also toggles PiP.
@@ -915,6 +927,18 @@ export function initUI(player: Player): void {
       `${index + 1}. ${track.artist} - ${track.title}${kbps === null ? '' : ` (${kbps} KBPS)`}`,
     );
     kbpsEl.textContent = kbps === null ? '--' : String(kbps);
+    // Yandex tracks don't carry a bitrate at search time — fetch the resolved
+    // stream's bitrate and light up the LCD once it arrives (if still current).
+    if (track.bitrateKbps === null) {
+      const forId = track.id;
+      void getBitrate(track.id)
+        .then((r) => {
+          if (r.kbps == null) return;
+          track.bitrateKbps = r.kbps; // cache so a replay shows it instantly
+          if (player.currentTrack?.id === forId) kbpsEl.textContent = String(r.kbps);
+        })
+        .catch((err) => console.warn('[ya-namp] bitrate:', errorMessage(err)));
+    }
     document.title = `${track.artist} - ${track.title} · ya-namp`;
     highlightCurrent();
     renderLikeButton();

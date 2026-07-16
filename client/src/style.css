@@ -29,7 +29,13 @@ html {
 
 body {
   min-height: 100vh;
-  padding: 36px 12px;
+  /* Keep the desktop 36px/12px frame, but grow into the iOS safe-area insets so
+     content clears the notch / home indicator when launched standalone
+     (viewport-fit=cover). max() means desktop is unaffected (insets are 0). */
+  padding-top: max(36px, env(safe-area-inset-top));
+  padding-right: max(12px, env(safe-area-inset-right));
+  padding-bottom: max(36px, env(safe-area-inset-bottom));
+  padding-left: max(12px, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -48,7 +54,8 @@ body {
 /* ---------------------------------------------------------------- windows */
 
 .win {
-  width: 550px;
+  /* 550 on desktop; shrinks to fit narrow screens (mobile PWA) and PiP windows */
+  width: min(550px, calc(100vw - 24px));
   background: linear-gradient(180deg, var(--chrome-light), var(--chrome));
   border: 2px solid;
   border-color: var(--hi) var(--lo) var(--lo) var(--hi);
@@ -71,6 +78,59 @@ body {
 .main-win.in-pip .wave-row,
 .main-win.in-pip .connect-row {
   display: none;
+}
+
+/* In PiP the player fills the native (content-fit) window with no own chrome. */
+.main-win.in-pip {
+  width: 100%;
+  border: none;
+  box-shadow: none;
+}
+
+/* Narrow width (mobile PWA or a shrunk PiP window): let transport buttons share
+   the row and shrink instead of overflowing. */
+@media (max-width: 480px) {
+  .transport-row {
+    gap: 2px;
+  }
+  .transport-row .t-btn {
+    flex: 1 1 0;
+    min-width: 30px;
+  }
+}
+
+/* PiP priority-based degradation — as the window shrinks, drop the least
+   important chrome first, always keeping title, time, seek and prev/play/next.
+   Scoped to .in-pip so the desktop tab is never affected. */
+@media (max-width: 520px) {
+  .main-win.in-pip .clutter,
+  .main-win.in-pip .knob-label {
+    display: none;
+  }
+}
+@media (max-width: 450px) {
+  .main-win.in-pip .small-range.bal,
+  .main-win.in-pip canvas#vis {
+    display: none;
+  }
+}
+@media (max-width: 400px) {
+  .main-win.in-pip .mode-toggles,
+  .main-win.in-pip .info-row {
+    display: none;
+  }
+}
+@media (max-width: 350px) {
+  .main-win.in-pip .eqpl,
+  .main-win.in-pip #btn-eject {
+    display: none;
+  }
+}
+@media (max-width: 300px) {
+  .main-win.in-pip .mixer-row,
+  .main-win.in-pip #btn-stop {
+    display: none;
+  }
 }
 
 /* Shown in the tab while the main window is popped out to picture-in-picture. */

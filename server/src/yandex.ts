@@ -251,6 +251,37 @@ export async function resolveStreamUrl(token: string, id: string): Promise<strin
   return `https://${host}/get-mp3/${sign}/${ts}${path}`;
 }
 
+/**
+ * Best-effort: the bitrate (kbps) of the variant we'd actually stream for a
+ * track. Returns null on any failure — it's only used to light up the LCD.
+ */
+export async function getBitrate(token: string, id: string): Promise<number | null> {
+  let res: HttpResult;
+  try {
+    res = await httpsRequest(`${API_BASE}/tracks/${encodeURIComponent(id)}/download-info`, {
+      headers: authHeaders(token),
+    });
+  } catch (err) {
+    console.warn(`[bitrate] ${id} fetch failed: ${errorMessage(err)}`);
+    return null;
+  }
+  if (res.status < 200 || res.status >= 300) return null;
+  try {
+    const data = JSON.parse(res.body) as DownloadInfoResponse;
+    const variants = (data.result ?? []).filter((v) => v.codec === 'mp3');
+    if (variants.length === 0) return null;
+    variants.sort(
+      (a, b) =>
+        Number(a.preview === true) - Number(b.preview === true) ||
+        (b.bitrateInKbps ?? 0) - (a.bitrateInKbps ?? 0),
+    );
+    return variants[0]?.bitrateInKbps ?? null;
+  } catch (err) {
+    console.warn(`[bitrate] ${id} parse failed: ${errorMessage(err)}`);
+    return null;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // "Моя волна" / My Wave — the rotor personalized AI radio
 // ---------------------------------------------------------------------------

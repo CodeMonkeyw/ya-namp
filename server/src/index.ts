@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import type { IncomingMessage } from 'node:http';
 import type {
   ApiError,
+  BitrateResponse,
   CreatePlaylistRequest,
   LikedIdsResponse,
   LikeRequest,
@@ -39,6 +40,7 @@ import {
   createPlaylist,
   errorMessage,
   fetchLikedIds,
+  getBitrate,
   fetchPlaylists,
   fetchPlaylistTracks,
   fetchWave,
@@ -125,6 +127,21 @@ app.get('/api/search', async (req: Request, res: Response) => {
   } catch (err) {
     respondError(res, err, 'Search failed');
   }
+});
+
+app.get('/api/bitrate/:id', async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const demo = getDemoEntry(id);
+  if (demo) {
+    res.json({ kbps: demo.track.bitrateKbps } satisfies BitrateResponse);
+    return;
+  }
+  if (!session) {
+    res.json({ kbps: null } satisfies BitrateResponse);
+    return;
+  }
+  const kbps = await getBitrate(session.token, id);
+  res.json({ kbps } satisfies BitrateResponse);
 });
 
 app.get('/api/wave', async (req: Request, res: Response) => {

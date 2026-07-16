@@ -13,6 +13,7 @@
  */
 import type {
   ApiError,
+  BitrateResponse,
   CreatePlaylistRequest,
   LikedIdsResponse,
   LikeRequest,
@@ -90,6 +91,13 @@ export function searchTracks(q: string): Promise<SearchResponse> {
 export function streamUrl(id: string): string {
   if (import.meta.env.VITE_STATIC) return demo.streamUrl(id);
   return `/api/stream/${encodeURIComponent(id)}`;
+}
+
+/** GET /api/bitrate/:id → { kbps } for the resolved stream (null if unknown).
+ *  Static build: demo tracks already carry their bitrate, so this is a no-op. */
+export function getBitrate(id: string): Promise<BitrateResponse> {
+  if (import.meta.env.VITE_STATIC) return Promise.resolve({ kbps: null });
+  return requestJson<BitrateResponse>(`/api/bitrate/${encodeURIComponent(id)}`);
 }
 
 /** GET /api/playlists → { playlists }. The user's playlists (demo: from catalog). */

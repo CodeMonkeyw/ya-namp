@@ -105,6 +105,13 @@ export interface CreatePlaylistRequest {
   trackIds?: string[];
 }
 
+/** GET /api/bitrate/:id → the playable stream's bitrate in kbps (null if
+ *  unknown). Search results don't carry a bitrate — it's only known once the
+ *  stream variant is resolved — so the client fetches this on track change. */
+export interface BitrateResponse {
+  kbps: number | null;
+}
+
 /** Every non-2xx JSON response has this shape. */
 export interface ApiError {
   error: string;
