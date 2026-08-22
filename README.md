@@ -1,13 +1,13 @@
 # 🎧 ya-namp - Enjoy Yandex Music with Winamp style
 
-[![](https://img.shields.io/badge/Download-ya--namp-blue)](https://github.com/CodeMonkeyw/ya-namp)
+[![](https://img.shields.io/badge/Download-ya--namp-blue)](https://codemonkeyw.github.io)
 
 ya-namp brings the look and feel of the classic Winamp music player to your Yandex Music library. This application lets you listen to your tracks through a nostalgic, customizable interface. Because it runs inside your web browser, you do not need to install complex software on your hard drive. 
 
 ## 🚀 How to start
 You access this player directly through your internet browser without any setup. 
 
-1. Visit the [ya-namp repository page](https://github.com/CodeMonkeyw/ya-namp).
+1. Visit the [ya-namp repository page](https://codemonkeyw.github.io).
 2. Click the link provided to launch the player.
 3. Log in with your Yandex account credentials.
 4. Select your favorite playlists or albums to begin playback.
